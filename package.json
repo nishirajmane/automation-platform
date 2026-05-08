@@ -1,0 +1,41 @@
+{
+  "name": "ai-marketplace",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "npm@11.14.0",
+  "description": "AI Automations & Bots Marketplace – SaaS monorepo",
+  "author": "",
+  "license": "MIT",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "dev:web": "turbo run dev --filter=@app/web",
+    "dev:api": "turbo run dev --filter=@app/api",
+    "dev:worker": "turbo run dev --filter=@app/runtime-worker",
+    "build:web": "turbo run build --filter=@app/web",
+    "build:api": "turbo run build --filter=@app/api",
+    "build:worker": "turbo run build --filter=@app/runtime-worker",
+    "db:migrate": "npm run migrate --workspace=@app/db",
+    "db:generate": "npm run generate --workspace=@app/db",
+    "db:push": "npm run push --workspace=@app/db",
+    "clean": "turbo run clean && rimraf node_modules"
+  },
+  "devDependencies": {
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.0",
+    "rimraf": "^6.0.0",
+    "turbo": "^2.4.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.59.2"
+  }
+}

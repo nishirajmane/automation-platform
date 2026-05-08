@@ -1,0 +1,74 @@
+name: Deploy to Kubernetes
+
+on:
+  # Triggered after Docker images are built, or on version tag push
+  workflow_run:
+    workflows: ["Build & Push Docker Images"]
+    types: [completed]
+    branches: [main]
+  push:
+    tags: ["v*"]
+
+jobs:
+  deploy:
+    name: Deploy to K8s
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # TODO: Configure your cluster credentials.
+      # Option A: Use a kubeconfig stored as a GitHub Secret
+      # Option B: Use cloud-provider CLI (doctl, gcloud, aws)
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: latest
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+
+      # Apply base resources
+      - name: Apply namespace & config
+        run: |
+          kubectl apply -f infra/k8s/base/namespace.yaml
+          kubectl apply -f infra/k8s/base/configmap.yaml
+          # NOTE: Secrets should be created manually or via cloud secret manager.
+          # Do NOT apply secrets.example.yaml in production.
+
+      # Apply service manifests
+      - name: Deploy web
+        run: |
+          kubectl apply -f infra/k8s/web/
+          kubectl -n ai-marketplace set image deployment/web \
+            web=ghcr.io/${{ github.repository_owner }}/ai-marketplace-web:${{ github.sha }}
+
+      - name: Deploy API
+        run: |
+          kubectl apply -f infra/k8s/api/
+          kubectl -n ai-marketplace set image deployment/api \
+            api=ghcr.io/${{ github.repository_owner }}/ai-marketplace-api:${{ github.sha }}
+
+      - name: Deploy runtime-worker
+        run: |
+          kubectl apply -f infra/k8s/runtime-worker/
+          kubectl -n ai-marketplace set image deployment/runtime-worker \
+            runtime-worker=ghcr.io/${{ github.repository_owner }}/ai-marketplace-runtime-worker:${{ github.sha }}
+
+      # Apply ingress
+      - name: Apply ingress
+        run: kubectl apply -f infra/k8s/ingress/
+
+      # Verify rollout
+      - name: Wait for rollout
+        run: |
+          kubectl -n ai-marketplace rollout status deployment/web --timeout=120s
+          kubectl -n ai-marketplace rollout status deployment/api --timeout=120s
+          kubectl -n ai-marketplace rollout status deployment/runtime-worker --timeout=120s

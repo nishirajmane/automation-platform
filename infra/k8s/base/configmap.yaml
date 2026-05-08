@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-marketplace-config
+  namespace: ai-marketplace
+data:
+  APP_NAME: "ai-marketplace"
+  NODE_ENV: "production"
+  API_PORT: "4000"
+  # NOTE: Database and Redis URLs should come from Secrets, not ConfigMap.
+  # These are non-sensitive configuration values only.

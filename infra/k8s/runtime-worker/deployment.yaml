@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runtime-worker
+  namespace: ai-marketplace
+  labels:
+    app: runtime-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: runtime-worker
+  template:
+    metadata:
+      labels:
+        app: runtime-worker
+    spec:
+      containers:
+        - name: runtime-worker
+          # TODO: Replace with your actual registry image
+          image: ghcr.io/ORG/ai-marketplace-runtime-worker:latest
+          # No ports — worker does not receive external traffic
+          envFrom:
+            - configMapRef:
+                name: ai-marketplace-config
+            - secretRef:
+                name: ai-marketplace-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      # No Service needed — worker only consumes from Redis queue

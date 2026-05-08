@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────────────
+# Ingress: Routes traffic to web and api services
+# ─────────────────────────────────────────────────────
+# Prerequisites:
+#   - An Ingress Controller (e.g. ingress-nginx) installed in the cluster
+#   - cert-manager installed for automatic TLS via Let's Encrypt
+#
+# TODO: Replace "marketplace.example.com" with your actual domain.
+# ─────────────────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ai-marketplace-ingress
+  namespace: ai-marketplace
+  annotations:
+    # TLS — cert-manager + Let's Encrypt
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # Nginx-specific annotations (adjust for your ingress controller)
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - marketplace.example.com
+      secretName: ai-marketplace-tls
+  rules:
+    - host: marketplace.example.com
+      http:
+        paths:
+          # API routes
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 4000
+          # Health endpoint (no /api prefix)
+          - path: /health
+            pathType: Exact
+            backend:
+              service:
+                name: api
+                port:
+                  number: 4000
+          # Everything else → web frontend
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 3000
