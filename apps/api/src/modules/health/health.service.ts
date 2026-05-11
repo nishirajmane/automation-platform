@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { DatabaseService } from '../../prisma/prisma.service';
 import { RedisService } from '../../redis/redis.service';
 import type { HealthStatus } from '@app/shared-types';
 
 @Injectable()
 export class HealthService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly db: DatabaseService,
     private readonly redis: RedisService,
   ) {}
 
@@ -16,7 +16,7 @@ export class HealthService {
 
     // Check database
     try {
-      await this.prisma.$queryRaw`SELECT 1`;
+      await this.db.query('SELECT 1');
       dbStatus = 'up';
     } catch {
       dbStatus = 'down';

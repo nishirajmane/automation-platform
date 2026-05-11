@@ -1,15 +1,17 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { PrismaClient } from '@app/db';
+import { db } from '@app/db';
 import { createLogger } from '@app/shared-utils';
 
-const logger = createLogger('PrismaService');
+const logger = createLogger('DatabaseService');
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class DatabaseService implements OnModuleInit, OnModuleDestroy {
+  public pool = db;
+
   async onModuleInit() {
     try {
-      await this.$connect();
-      logger.info('Connected to database');
+      await this.pool.connect();
+      logger.info('Connected to database via pg');
     } catch (error) {
       logger.warn(
         'Could not connect to database. Some features will be unavailable.',
@@ -18,6 +20,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   }
 
   async onModuleDestroy() {
-    await this.$disconnect();
+    await this.pool.end();
+  }
+
+  async query(text: string, params?: any[]) {
+    return this.pool.query(text, params);
   }
 }

@@ -14,18 +14,14 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
-    "generate": "prisma generate",
-    "migrate": "prisma migrate dev",
-    "push": "prisma db push",
-    "studio": "prisma studio",
     "lint": "eslint src/",
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@prisma/client": "^6.2.0"
+    "pg": "^8.20.0"
   },
   "devDependencies": {
-    "prisma": "^6.2.0",
+    "@types/pg": "^8.11.10",
     "typescript": "^5.7.0"
   }
 }

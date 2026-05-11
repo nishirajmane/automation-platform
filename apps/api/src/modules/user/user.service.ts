@@ -1,29 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { DatabaseService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly db: DatabaseService) {}
 
   /**
    * Find a user by ID.
    * TODO: Add CRUD, password hashing, etc.
    */
   async findById(id: string) {
-    return this.prisma.user.findUnique({ where: { id } });
+    const res = await this.db.query('SELECT * FROM "User" WHERE id = $1', [id]);
+    return res.rows[0] || null;
   }
 
   /**
    * Find a user by email.
    */
   async findByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
+    const res = await this.db.query('SELECT * FROM "User" WHERE email = $1', [email]);
+    return res.rows[0] || null;
   }
 
   /**
    * List all users for a given tenant.
    */
   async findByTenant(tenantId: string) {
-    return this.prisma.user.findMany({ where: { tenantId } });
+    const res = await this.db.query('SELECT * FROM "User" WHERE "tenantId" = $1', [tenantId]);
+    return res.rows;
   }
 }

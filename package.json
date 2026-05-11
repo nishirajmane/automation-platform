@@ -25,9 +25,6 @@
     "build:web": "turbo run build --filter=@app/web",
     "build:api": "turbo run build --filter=@app/api",
     "build:worker": "turbo run build --filter=@app/runtime-worker",
-    "db:migrate": "npm run migrate --workspace=@app/db",
-    "db:generate": "npm run generate --workspace=@app/db",
-    "db:push": "npm run push --workspace=@app/db",
     "clean": "turbo run clean && rimraf node_modules"
   },
   "devDependencies": {
@@ -37,5 +34,8 @@
     "turbo": "^2.4.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.59.2"
+  },
+  "dependencies": {
+    "pg": "^8.20.0"
   }
 }

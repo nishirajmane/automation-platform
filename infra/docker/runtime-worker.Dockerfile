@@ -32,7 +32,6 @@ COPY package.json package-lock.json ./
 # Copy built artifacts
 COPY --from=builder /app/apps/runtime-worker/dist ./apps/runtime-worker/dist
 COPY --from=builder /app/apps/runtime-worker/package.json ./apps/runtime-worker/
-COPY --from=builder /app/apps/runtime-worker/node_modules ./apps/runtime-worker/node_modules
 COPY --from=builder /app/packages/ ./packages/
 COPY --from=builder /app/node_modules ./node_modules
 

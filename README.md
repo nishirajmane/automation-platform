@@ -9,9 +9,9 @@ A production-ready SaaS platform for discovering, publishing and monetising AI-p
 | Layer          | Technology                                      |
 | -------------- | ------------------------------------------------ |
 | **Frontend**   | Next.js 15 (App Router) · TypeScript · TailwindCSS v4 |
-| **Backend API**| NestJS 10 · TypeScript · Prisma · PostgreSQL     |
+| **Backend API**| NestJS 10 · TypeScript · PostgreSQL (pg)           |
 | **Worker**     | Node.js · BullMQ · Redis                         |
-| **Database**   | PostgreSQL (via Prisma ORM)                       |
+| **Database**   | PostgreSQL                                       |
 | **Cache/Queue**| Redis                                             |
 | **Infra**      | Docker · Kubernetes · GitHub Actions              |
 | **Monorepo**   | pnpm workspaces · Turborepo                       |

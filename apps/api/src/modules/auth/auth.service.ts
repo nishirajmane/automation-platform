@@ -1,21 +1,20 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { DatabaseService } from '../../prisma/prisma.service';
 import { createLogger } from '@app/shared-utils';
 
 const logger = createLogger('AuthService');
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly db: DatabaseService) {}
 
   /**
    * Dummy sign-in: looks up user by email.
    * TODO: Replace with real password hashing (bcrypt) and JWT generation.
    */
   async signIn(email: string, _password: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-    });
+    const res = await this.db.query('SELECT * FROM "User" WHERE email = $1', [email]);
+    const user = res.rows[0];
 
     if (!user) {
       logger.warn(`Sign-in attempt for unknown email: ${email}`);
