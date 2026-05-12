@@ -136,7 +136,7 @@ export default function FlowMartLanding() {
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+      transition: { delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }
     })
   };
 
@@ -207,9 +207,113 @@ export default function FlowMartLanding() {
         </motion.div>
       </section>
 
+      {/* 3. BENTO FEATURES (DARK THEME) */}
+      <section className="py-24 px-6 bg-[#0A0A0A] border-y border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Card 1: Sell anything */}
+            <div className="bg-[#111111] rounded-none border border-white/10 p-8 md:p-12 flex flex-col justify-between relative min-h-[400px] group hover:border-white/20 transition-colors overflow-hidden">
+              <div className="relative z-10 max-w-sm mb-8">
+                <h3 className="text-3xl font-serif mb-4 text-white">Sell anything</h3>
+                <p className="text-zinc-400 text-lg leading-relaxed">
+                  Video lessons. Monthly subscriptions. Whatever! FlowMart was created to help you experiment with all kinds of ideas and formats.
+                </p>
+              </div>
+              {/* Dark Theme Illustration */}
+              <div className="absolute right-0 bottom-0 w-[300px] h-[200px] border-t border-l border-white/10 bg-zinc-950 p-6 flex flex-col justify-end transition-transform group-hover:-translate-y-2">
+                <div className="absolute top-4 left-4 font-mono text-xs text-zinc-600">product.json</div>
+                <div className="w-full h-24 border border-white/5 bg-[#1A1A1A] flex items-center justify-center relative mt-auto">
+                  <div className="w-12 h-12 bg-zinc-900 border border-white/10 flex items-center justify-center text-[#C8F04D]">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  </div>
+                  <div className="absolute top-2 right-2 flex gap-1">
+                     <div className="w-1.5 h-1.5 rounded-none bg-zinc-700"></div>
+                     <div className="w-1.5 h-1.5 rounded-none bg-zinc-700"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
+            {/* Card 2: Make your own road */}
+            <div className="bg-[#111111] rounded-none border border-white/10 p-8 md:p-12 flex flex-col justify-between relative min-h-[400px] group hover:border-white/20 transition-colors overflow-hidden">
+              <div className="relative z-10 max-w-sm mb-8">
+                <h3 className="text-3xl font-serif mb-4 text-white">Make your own road</h3>
+                <p className="text-zinc-400 text-lg leading-relaxed">
+                  Whether you need more balance, flexibility, or just a different gig, we make it easy to chart a new path.
+                </p>
+              </div>
+              {/* Dark Theme Illustration */}
+              <div className="absolute right-8 bottom-0 w-[320px] h-[160px] border-t border-x border-white/10 bg-zinc-950 pt-6 px-6 transition-transform group-hover:-translate-y-2">
+                <div className="flex justify-between items-end mb-4 border-b border-white/5 pb-4">
+                  <div>
+                    <div className="text-2xl font-mono text-white">$201,083</div>
+                    <div className="text-xs font-mono text-zinc-500 mt-1 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-[#C8F04D]"></div> TOTAL REVENUE
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-end gap-2 h-[40px] w-full">
+                  {[30, 60, 45, 80, 55, 75, 45, 90, 60, 50].map((h, i) => (
+                    <div key={i} className="flex-1 bg-zinc-900 relative h-full">
+                      <div className="absolute bottom-0 w-full bg-zinc-800 transition-all duration-500 group-hover:bg-[#C8F04D]" style={{ height: `${h}%` }}>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-      {/* 4. FEATURED LISTINGS GRID */}
+            {/* Card 3: Sell to anyone */}
+            <div className="bg-[#111111] rounded-none border border-white/10 p-8 md:p-12 min-h-[400px] flex flex-col justify-center hover:border-white/20 transition-colors">
+              <h3 className="text-3xl font-serif mb-10 text-white">Sell to anyone</h3>
+              <ul className="space-y-6">
+                {[
+                  "Go from 0 to $1 and automated workflows.",
+                  "Let your customers pay in their own currency.",
+                  "Choose between one-time, recurring, or fixed-length payments in your currency of choice."
+                ].map((text, i) => (
+                  <li key={i} className="flex gap-4 items-start">
+                    <div className="mt-1 w-5 h-5 shrink-0 bg-[#C8F04D]/10 text-[#C8F04D] flex items-center justify-center text-xs border border-[#C8F04D]/20">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <p className="text-lg text-zinc-300 leading-snug">{text}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Card 4: Sell anywhere */}
+            <div className="bg-[#111111] rounded-none border border-white/10 p-8 md:p-12 overflow-hidden relative min-h-[400px] group hover:border-white/20 transition-colors">
+              <div className="relative z-10 max-w-sm mb-8">
+                <h3 className="text-3xl font-serif mb-4 text-white">Sell anywhere</h3>
+                <p className="text-zinc-400 text-lg leading-relaxed">
+                  Create and customize your storefront with our all-in-one platform or choose to use your personal site instead. Seamlessly connect your account to thousands of apps in your current stack.
+                </p>
+              </div>
+              
+              {/* Dark Theme Illustration */}
+              <div className="absolute right-0 bottom-10 w-[260px] h-[160px] border-y border-l border-white/10 bg-zinc-950 p-4 text-white flex flex-col transition-transform group-hover:-translate-x-2">
+                 <div className="flex gap-1.5 mb-4 border-b border-white/5 pb-2">
+                   <div className="w-2 h-2 bg-zinc-800"></div>
+                   <div className="w-2 h-2 bg-zinc-800"></div>
+                   <div className="w-2 h-2 bg-zinc-800"></div>
+                 </div>
+                 <div className="bg-[#1A1A1A] text-white p-4 flex-1 border border-white/5 flex flex-col justify-center">
+                   <div className="text-xl font-mono text-[#C8F04D] mb-2">{">"} deploy</div>
+                   <div className="w-full h-1 bg-zinc-800 mt-2"></div>
+                   <div className="w-3/4 h-1 bg-zinc-800 mt-2"></div>
+                 </div>
+              </div>
+              
+              {/* Floating app icons */}
+              <div className="absolute right-8 top-12 w-10 h-10 bg-zinc-900 border border-white/10 flex items-center justify-center font-mono text-sm text-zinc-400 shadow-2xl transition-transform group-hover:-translate-y-2">API</div>
+              <div className="absolute right-24 top-[100px] w-10 h-10 bg-zinc-900 border border-[#C8F04D]/30 flex items-center justify-center font-mono text-sm text-[#C8F04D] shadow-2xl transition-transform group-hover:translate-y-2 z-0">WEB</div>
+            </div>
+
+          </div>
+        </div>
+      </section>      {/* 4. FEATURED LISTINGS GRID */}
       <section className="py-24 px-6 max-w-7xl mx-auto">
         <div className="flex justify-between items-end mb-12">
           <h2 className="font-serif text-4xl">Featured Listings</h2>
@@ -219,7 +323,7 @@ export default function FlowMartLanding() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((item, i) => (
+          {[1, 2, 3].map((item, i) => (
             <motion.div custom={i} variants={staggerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} key={i}>
               <motion.div whileHover={{ y: -6 }} className="h-full">
                 <Card className="rounded-none border border-white/10 bg-[#111111] overflow-hidden h-full flex flex-col transition-shadow hover:shadow-[0_20px_40px_-15px_rgba(200,240,77,0.05)]">
