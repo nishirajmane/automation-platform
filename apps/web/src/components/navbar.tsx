@@ -1,14 +1,55 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { Menu, Star } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Menu, Star, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { usePathname } from 'next/navigation';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuGroup,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<{ name?: string; email?: string } | null>(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const checkUser = () => {
+      const stored = localStorage.getItem('flowmart_user');
+      if (stored) {
+        try {
+          setUser(JSON.parse(stored));
+        } catch (e) {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+    checkUser();
+    window.addEventListener('storage', checkUser);
+    return () => window.removeEventListener('storage', checkUser);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('flowmart_user');
+    window.dispatchEvent(new Event('storage'));
+    setUser(null);
+  };
+
+  if (pathname?.startsWith('/dashboard')) {
+    return null;
+  }
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex h-16 bg-black text-white border-b border-white/10 font-sans">
@@ -64,12 +105,35 @@ export function Navbar() {
                 <Link href="/" className="text-lg font-medium hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>About</Link>
                 <Link href="/jobs" className="text-lg font-medium hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>Jobs</Link>
                 <div className="flex flex-col gap-4 mt-6 pt-6 border-t border-white/10">
-                  <Link href="/login" className="flex items-center justify-center border border-white/20 py-3 text-sm font-medium hover:bg-white/5 transition-colors" onClick={() => setMobileOpen(false)}>
-                    Log in
-                  </Link>
-                  <Link href="/sell" className="flex items-center justify-center bg-[#C8F04D] hover:bg-[#b0d83a] py-3 text-sm font-medium text-black transition-colors" onClick={() => setMobileOpen(false)}>
-                    Start selling
-                  </Link>
+                  {user ? (
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center gap-3 px-2">
+                        <Avatar className="w-10 h-10 border border-white/20">
+                          <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} />
+                          <AvatarFallback>{user.name?.charAt(0) || 'U'}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium">{user.name || 'User'}</span>
+                          <span className="text-xs text-zinc-400">{user.email}</span>
+                        </div>
+                      </div>
+                      <Link href="/dashboard" className="flex items-center justify-center bg-[#C8F04D] hover:bg-[#b0d83a] py-3 text-sm font-medium text-black transition-colors" onClick={() => setMobileOpen(false)}>
+                        Dashboard
+                      </Link>
+                      <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors px-2 mt-2">
+                        <LogOut className="w-4 h-4" /> Log out
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <Link href="/login" className="flex items-center justify-center border border-white/20 py-3 text-sm font-medium hover:bg-white/5 transition-colors" onClick={() => setMobileOpen(false)}>
+                        Log in
+                      </Link>
+                      <Link href="/signup" className="flex items-center justify-center bg-[#C8F04D] hover:bg-[#b0d83a] py-3 text-sm font-medium text-black transition-colors" onClick={() => setMobileOpen(false)}>
+                        Start selling
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </SheetContent>
@@ -79,18 +143,66 @@ export function Navbar() {
 
       {/* Right Section (Desktop) */}
       <div className="hidden lg:flex h-full">
-        <Link 
-          href="/login" 
-          className="flex h-full items-center border-l border-white/20 px-8 text-sm font-medium hover:bg-white/5 transition-colors"
-        >
-          Log in
-        </Link>
-        <Link 
-          href="/sell" 
-          className="flex h-full items-center bg-[#C8F04D] hover:bg-[#b0d83a] px-8 text-sm font-medium text-black transition-colors"
-        >
-          Start selling
-        </Link>
+        {user ? (
+          <>
+            <div className="flex h-full items-center border-l border-white/20 px-6">
+              <DropdownMenu>
+                <DropdownMenuTrigger className="rounded-full focus:outline-none focus:ring-2 focus:ring-[#C8F04D] focus:ring-offset-2 focus:ring-offset-black">
+                  <Avatar className="w-9 h-9 border border-white/20 hover:border-white/40 transition-colors">
+                    <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} />
+                    <AvatarFallback>{user.name?.charAt(0) || 'U'}</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-[#111111] text-white border-white/10 rounded-none">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{user.name || 'User'}</p>
+                        <p className="text-xs leading-none text-zinc-400">{user.email}</p>
+                      </div>
+                    </DropdownMenuLabel>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="bg-white/10" />
+                  <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer rounded-none">
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer rounded-none">
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-white/10" />
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="text-red-400 focus:bg-red-400/10 focus:text-red-400 cursor-pointer rounded-none flex items-center"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <Link 
+              href="/dashboard" 
+              className="flex h-full items-center bg-[#C8F04D] hover:bg-[#b0d83a] px-8 text-sm font-medium text-black transition-colors"
+            >
+              Dashboard
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link 
+              href="/login" 
+              className="flex h-full items-center border-l border-white/20 px-8 text-sm font-medium hover:bg-white/5 transition-colors"
+            >
+              Log in
+            </Link>
+            <Link 
+              href="/signup" 
+              className="flex h-full items-center bg-[#C8F04D] hover:bg-[#b0d83a] px-8 text-sm font-medium text-black transition-colors"
+            >
+              Start selling
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );

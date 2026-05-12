@@ -5,14 +5,19 @@ const globalForDb = globalThis as unknown as {
   dbPool: Pool | undefined;
 };
 
-export const db =
-  globalForDb.dbPool ??
-  new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
+const getPool = () => {
+  if (!globalForDb.dbPool) {
+    globalForDb.dbPool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
+  }
+  return globalForDb.dbPool;
+};
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForDb.dbPool = db;
-}
+export const db = {
+  query: async (text: string, params?: any[]) => getPool().query(text, params),
+  connect: async () => getPool().connect(),
+  end: async () => getPool().end()
+};
 
 export { Pool };

@@ -35,4 +35,32 @@ export class AuthService {
       },
     };
   }
+
+  /**
+   * Dummy sign-up: creates a user.
+   */
+  async signUp(email: string, passwordHash: string, name: string) {
+    // Check if user already exists
+    const existing = await this.db.query('SELECT * FROM "User" WHERE email = $1', [email]);
+    if (existing.rows.length > 0) {
+      throw new UnauthorizedException('User with this email already exists');
+    }
+
+    const res = await this.db.query(
+      'INSERT INTO "User" (email, password_hash, name) VALUES ($1, $2, $3) RETURNING *',
+      [email, passwordHash, name]
+    );
+    const user = res.rows[0];
+
+    logger.info(`New user signed up: ${email}`);
+
+    return {
+      accessToken: 'placeholder-jwt-token',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+    };
+  }
 }

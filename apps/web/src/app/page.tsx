@@ -363,24 +363,60 @@ export default function FlowMartLanding() {
       </section>
 
       {/* 5. HOW IT WORKS */}
-      <section className="py-24 px-6 border-y border-white/5 bg-[#0D0D0D]">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="font-serif text-4xl mb-16">Built for velocity.</h2>
+      <section className="py-32 px-6 border-y border-white/5 bg-[#0A0A0A] relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#C8F04D]/5 blur-[120px] rounded-full pointer-events-none" />
+
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="font-serif text-4xl mb-24 text-white"
+          >
+            Built for velocity.
+          </motion.h2>
           
           <div className="flex flex-col md:flex-row justify-between relative">
-            <div className="hidden md:block absolute top-12 left-[10%] right-[10%] h-[1px] border-t border-dashed border-zinc-800 z-0" />
+            {/* The dashed line */}
+            <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-[1px] border-t border-dashed border-zinc-800 z-0" />
+            
+            {/* Moving glow along the line */}
+            <div className="hidden md:block absolute top-12 left-[15%] w-[70%] h-[1px] z-0 overflow-hidden">
+              <motion.div
+                initial={{ x: "-100%" }}
+                animate={{ x: "300%" }}
+                transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+                className="w-1/4 h-[2px] -mt-[1px] bg-gradient-to-r from-transparent via-[#C8F04D] to-transparent shadow-[0_0_15px_rgba(200,240,77,0.5)]"
+              />
+            </div>
             
             {[
               { num: "01", title: "Discover", desc: "Browse vetted, ready-to-use automations." },
               { num: "02", title: "Deploy", desc: "One-click setup or instant code download." },
               { num: "03", title: "Scale", desc: "Automate your entire stack effortlessly." }
             ].map((step, i) => (
-              <motion.div custom={i} variants={staggerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} key={i} className="relative z-10 flex flex-col items-center mb-12 md:mb-0 bg-[#0D0D0D] px-4">
-                <div className="w-24 h-24 rounded-none bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6 font-serif text-3xl text-zinc-500">
-                  {step.num}
+              <motion.div 
+                custom={i} 
+                variants={staggerVariants} 
+                initial="hidden" 
+                whileInView="visible" 
+                viewport={{ once: true }} 
+                key={i} 
+                className="relative z-10 flex flex-col items-center mb-16 md:mb-0 bg-[#0A0A0A] px-6 group cursor-default"
+              >
+                <div className="relative">
+                  <motion.div 
+                    whileHover={{ scale: 1.05, rotate: 3 }}
+                    className="w-24 h-24 rounded-none bg-[#111111] border border-white/10 flex items-center justify-center mb-8 font-serif text-3xl text-zinc-500 relative z-10 transition-colors duration-500 group-hover:border-[#C8F04D] group-hover:text-[#C8F04D] group-hover:bg-[#C8F04D]/5"
+                  >
+                    {step.num}
+                  </motion.div>
+                  {/* Subtle glow behind the box on hover */}
+                  <div className="absolute inset-0 bg-[#C8F04D] blur-[20px] opacity-0 group-hover:opacity-10 transition-opacity duration-500 z-0" />
                 </div>
-                <h3 className="text-xl font-medium mb-2">{step.title}</h3>
-                <p className="text-zinc-500 text-sm max-w-[200px]">{step.desc}</p>
+                <h3 className="text-xl font-medium mb-3 text-white transition-colors group-hover:text-[#C8F04D]">{step.title}</h3>
+                <p className="text-zinc-400 text-sm max-w-[220px] leading-relaxed">{step.desc}</p>
               </motion.div>
             ))}
           </div>
