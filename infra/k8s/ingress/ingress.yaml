@@ -22,10 +22,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - marketplace.example.com
+        - localhost
       secretName: ai-marketplace-tls
   rules:
-    - host: marketplace.example.com
+    - host: localhost
       http:
         paths:
           # API routes

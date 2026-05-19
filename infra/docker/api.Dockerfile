@@ -15,8 +15,7 @@ COPY apps/api/ ./apps/api/
 # Install all dependencies
 RUN npm ci
 
-# Generate Prisma Client
-RUN npm run generate --workspace=@app/db
+
 
 # Build the NestJS app
 RUN npx turbo run build --filter=@app/api
