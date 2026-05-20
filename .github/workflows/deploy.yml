@@ -1,20 +1,20 @@
-name: Deploy to Kubernetes
+name: Deploy to Server
 
+# Triggered after Docker images are successfully built & pushed
 on:
-  # Triggered after Docker images are built, or on version tag push
   workflow_run:
     workflows: ["Build & Push Docker Images"]
     types: [completed]
     branches: [main]
-  push:
-    tags: ["v*"]
+  # Also allow manual trigger
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: Deploy to K8s
+    name: SSH Deploy
     runs-on: ubuntu-latest
     if: >
-      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     timeout-minutes: 10
 
@@ -22,53 +22,48 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # TODO: Configure your cluster credentials.
-      # Option A: Use a kubeconfig stored as a GitHub Secret
-      # Option B: Use cloud-provider CLI (doctl, gcloud, aws)
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
+      # ── SSH into the server and deploy ────────────────────
+      # Required GitHub Secrets:
+      #   SSH_PRIVATE_KEY  — private key for server access
+      #   SERVER_HOST      — e.g. 74.125.151.162
+      #   SERVER_USER      — e.g. ubuntu
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          version: latest
+          host:     ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd ~/automation-platform
 
-      - name: Configure kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+            # Pull latest code
+            git pull origin main
 
-      # Apply base resources
-      - name: Apply namespace & config
-        run: |
-          kubectl apply -f infra/k8s/base/namespace.yaml
-          kubectl apply -f infra/k8s/base/configmap.yaml
-          # NOTE: Secrets should be created manually or via cloud secret manager.
-          # Do NOT apply secrets.example.yaml in production.
+            # Login to GHCR
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # Apply service manifests
-      - name: Deploy web
-        run: |
-          kubectl apply -f infra/k8s/web/
-          kubectl -n ai-marketplace set image deployment/web \
-            web=ghcr.io/${{ github.repository_owner }}/ai-marketplace-web:${{ github.sha }}
+            # Pull new images (built by build.yml)
+            docker compose -f docker-compose.prod.yml pull web api runtime-worker
 
-      - name: Deploy API
-        run: |
-          kubectl apply -f infra/k8s/api/
-          kubectl -n ai-marketplace set image deployment/api \
-            api=ghcr.io/${{ github.repository_owner }}/ai-marketplace-api:${{ github.sha }}
+            # Restart services with zero-downtime rolling update
+            docker compose -f docker-compose.prod.yml up -d --no-build
 
-      - name: Deploy runtime-worker
-        run: |
-          kubectl apply -f infra/k8s/runtime-worker/
-          kubectl -n ai-marketplace set image deployment/runtime-worker \
-            runtime-worker=ghcr.io/${{ github.repository_owner }}/ai-marketplace-runtime-worker:${{ github.sha }}
+            # Clean up old/dangling images
+            docker image prune -f
 
-      # Apply ingress
-      - name: Apply ingress
-        run: kubectl apply -f infra/k8s/ingress/
+            echo "✅ Deployment complete"
 
-      # Verify rollout
-      - name: Wait for rollout
-        run: |
-          kubectl -n ai-marketplace rollout status deployment/web --timeout=120s
-          kubectl -n ai-marketplace rollout status deployment/api --timeout=120s
-          kubectl -n ai-marketplace rollout status deployment/runtime-worker --timeout=120s
+      - name: Verify deployment health
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Wait for containers to be healthy
+            sleep 10
+            docker compose -f ~/automation-platform/docker-compose.prod.yml ps
+            curl -sf http://localhost/nginx-health || (echo "❌ Nginx unhealthy" && exit 1)
+            curl -sf http://localhost/api/health   || (echo "❌ API unhealthy" && exit 1)
+            echo "✅ All health checks passed"

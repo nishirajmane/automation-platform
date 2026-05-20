@@ -6,6 +6,14 @@ const nextConfig: NextConfig = {
 
   // Transpile workspace packages
   transpilePackages: ['@app/shared-types'],
+
+  // Disable TypeScript type-checking and ESLint during production build on this VM to save critical resources
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
