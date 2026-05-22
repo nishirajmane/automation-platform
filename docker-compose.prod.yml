@@ -87,7 +87,7 @@ services:
     build:
       context: .
       dockerfile: infra/docker/web.Dockerfile
-     image: ghcr.io/nishirajmane/ai-marketplace-web:latest
+    image: ghcr.io/nishirajmane/ai-marketplace-web:latest
     restart: unless-stopped
     environment:
       NODE_ENV: production
