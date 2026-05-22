@@ -5,7 +5,8 @@
  *   const data = await apiClient<HealthStatus>('/health');
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL 
+  ?? (typeof window === 'undefined' ? 'http://api:4000' : '/api');
 
 export async function apiClient<T>(
   path: string,
