@@ -51,7 +51,7 @@ services:
     build:
       context: .
       dockerfile: infra/docker/api.Dockerfile
-    image: ai-marketplace-api:latest
+    image: ghcr.io/nishirajmane/ai-marketplace-api:latest
     restart: unless-stopped
     <<: *common-env
     networks:
@@ -69,7 +69,7 @@ services:
     build:
       context: .
       dockerfile: infra/docker/runtime-worker.Dockerfile
-    image: ai-marketplace-runtime-worker:latest
+    image: ghcr.io/nishirajmane/ai-marketplace-runtime-worker:latest
     restart: unless-stopped
     <<: *common-env
     networks:
@@ -87,7 +87,7 @@ services:
     build:
       context: .
       dockerfile: infra/docker/web.Dockerfile
-    image: ai-marketplace-web:latest
+     image: ghcr.io/nishirajmane/ai-marketplace-web:latest
     restart: unless-stopped
     environment:
       NODE_ENV: production
