@@ -79,7 +79,7 @@ export function Navbar() {
           <Link href="/blog" className="hover:text-zinc-300 transition-colors">Blog</Link>
           <Link href="/pricing" className="hover:text-zinc-300 transition-colors">Pricing</Link>
           <Link href="/features" className="hover:text-zinc-300 transition-colors">Features</Link>
-          <Link href="/" className="rounded-full bg-white px-4 py-1.5 text-black hover:bg-zinc-200 transition-colors">About</Link>
+          <Link href="/dashboard" className="rounded-full bg-white px-4 py-1.5 text-black hover:bg-zinc-200 transition-colors">Marketplace</Link>
           <Link href="/jobs" className="hover:text-zinc-300 transition-colors">Jobs</Link>
         </div>
 
@@ -102,7 +102,7 @@ export function Navbar() {
                 <Link href="/blog" className="text-lg font-medium hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>Blog</Link>
                 <Link href="/pricing" className="text-lg font-medium hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>Pricing</Link>
                 <Link href="/features" className="text-lg font-medium hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>Features</Link>
-                <Link href="/" className="text-lg font-medium hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>About</Link>
+                <Link href="/dashboard" className="text-lg font-medium hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>Marketplace</Link>
                 <Link href="/jobs" className="text-lg font-medium hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>Jobs</Link>
                 <div className="flex flex-col gap-4 mt-6 pt-6 border-t border-white/10">
                   {user ? (

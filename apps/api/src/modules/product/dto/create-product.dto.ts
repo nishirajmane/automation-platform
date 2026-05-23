@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsEnum, IsNotEmpty, Min } from 'class-validator';
+import { IsString, IsNumber, IsEnum, IsNotEmpty, Min, IsOptional, IsArray } from 'class-validator';
 
 export enum PricingModelDto {
   FREE = 'FREE',
@@ -22,4 +22,21 @@ export class CreateProductDto {
 
   @IsEnum(PricingModelDto)
   pricingModel!: PricingModelDto;
+
+  @IsOptional()
+  @IsString()
+  thumbnailUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  category?: string;
+
+  @IsOptional()
+  @IsString()
+  version?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  features?: string[];
 }

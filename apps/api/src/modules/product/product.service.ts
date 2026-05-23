@@ -60,10 +60,10 @@ export class ProductService {
     `, [HARDCODED_TENANT_ID, 'Default Tenant', 'default']);
 
     const res = await this.db.query(`
-      INSERT INTO "Product" ("tenantId", name, slug, description, price, "pricingModel")
-      VALUES ($1, $2, $3, $4, $5, $6)
+      INSERT INTO "Product" ("tenantId", name, slug, description, price, "pricingModel", "thumbnailUrl", category, version, features)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING *
-    `, [HARDCODED_TENANT_ID, dto.name, slug, dto.description, dto.price, dto.pricingModel]);
+    `, [HARDCODED_TENANT_ID, dto.name, slug, dto.description, dto.price, dto.pricingModel, dto.thumbnailUrl, dto.category, dto.version, dto.features ? JSON.stringify(dto.features) : null]);
     
     return res.rows[0];
   }
